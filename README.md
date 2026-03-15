@@ -51,4 +51,5 @@ The goal of this project is to build a practical tool that can help students mak
 
 ## Developer
 
-Developed as a project focused on improving student career guidance through technology.
+Developed as a project focused on improving student career guidance through technology. 
+Developed by Sneha Pathak
