@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { AppState, UserProfile, DailyLog, TestResult, CareerSuggestion } from '@/lib/types';
 import { analyzeCareer } from '@/lib/careerEngine';
 
@@ -14,43 +14,23 @@ interface AppContextType extends AppState {
 
 const AppContext = createContext<AppContextType | null>(null);
 
-const STORAGE_KEY = 'pathfinder_state';
-
-function loadState(): Partial<AppState> {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-}
-
-function saveState(state: Partial<AppState>) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
 export function AppProvider({ children }: { children: ReactNode }) {
-  const saved = loadState();
-  const [isAuthenticated, setIsAuthenticated] = useState(saved.isAuthenticated || false);
-  const [profile, setProfileState] = useState<UserProfile | null>(saved.profile || null);
-  const [dailyLogs, setDailyLogs] = useState<DailyLog[]>(saved.dailyLogs || []);
-  const [testResult, setTestResultState] = useState<TestResult | null>(saved.testResult || null);
-  const [careerSuggestions, setCareerSuggestions] = useState<CareerSuggestion[]>(saved.careerSuggestions || []);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [profile, setProfileState] = useState<UserProfile | null>(null);
+  const [dailyLogs, setDailyLogs] = useState<DailyLog[]>([]);
+  const [testResult, setTestResultState] = useState<TestResult | null>(null);
+  const [careerSuggestions, setCareerSuggestions] = useState<CareerSuggestion[]>([]);
 
-  useEffect(() => {
-    saveState({ isAuthenticated, profile, dailyLogs, testResult, careerSuggestions });
-  }, [isAuthenticated, profile, dailyLogs, testResult, careerSuggestions]);
-
-  const login = (email: string, _password: string) => {
-    if (email) {
+  const login = (email: string, password: string) => {
+    if (email && password.length >= 6) {
       setIsAuthenticated(true);
       return true;
     }
     return false;
   };
 
-  const signup = (email: string, _password: string) => {
-    if (email) {
+  const signup = (email: string, password: string) => {
+    if (email && password.length >= 6) {
       setIsAuthenticated(true);
       return true;
     }
@@ -63,7 +43,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setDailyLogs([]);
     setTestResultState(null);
     setCareerSuggestions([]);
-    localStorage.removeItem(STORAGE_KEY);
   };
 
   const setProfile = (p: UserProfile) => setProfileState(p);
